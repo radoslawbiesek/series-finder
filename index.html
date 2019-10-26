@@ -14,9 +14,10 @@
   <body>
     <div class="container">
       <header class="header">
-        <h1>Series searching</h1>
-        <form class="form">
-          <label for="card-name-input">Enter the title: </label>
+        <h1 class="header__title">Series searching</h1>
+      </header>
+      <main>
+      <form class="form">
           <input
             type="text"
             class="form__input"
@@ -24,10 +25,8 @@
             autofocus
           />
           <button class="form__button">Search</button>
+          <label class="form__label" for="card-name-input">You are looking for <span>'game of thrones'</span></label>
         </form>
-      </header>
-      <main>
-        <p>You are looking for <span>'game of thrones'</span></p>
         <ul class="items" id="results">
           <li>
             <div class="item">
@@ -272,5 +271,6 @@
         </ul>
       </main>
     </div>
+    <script src='js/index.js'></script>
   </body>
 </html>

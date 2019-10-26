@@ -1,0 +1,42 @@
+.form {
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.form__input {
+    background-color: inherit;
+    outline: none;
+    border: 2px solid $item-bg;
+    border-radius: 2px 0 0 2px;
+    border-right: none;
+    color: $bright-font;
+    padding: 10px;
+    width: 300px;
+}
+
+.form__button {
+    background-color: inherit;
+    color: $bright-font;
+    outline: none;
+    border: 2px solid $item-bg;
+    border-radius: 0 2px 2px 0;
+    font-size: 1.5em;
+}
+
+.form__button:hover {
+    cursor: pointer;
+    border: 2px solid $yellow;
+}
+
+.form__input:focus {
+    border-color: $yellow;
+}
+
+.form__label {
+    margin-top: 30px;
+    width: 100%;
+    text-align: center;
+    font-size: 1.5em;
+}
