@@ -17,6 +17,8 @@
 
     &__image {
         position: relative;
+        height: 375px;
+        overflow: hidden;
         & img {
             width: 100%;
         }
@@ -48,13 +50,16 @@
         margin: 0;
         font-weight: bold;
     }
-    &__year,
-    &__running {
+    &__year {
         font-style: italic;
     }
     &__desc {
         margin: 0;
         margin-top: 1em;
+    }
+    &__award {
+        font-size: 1em;
+        font-style: italic;
     }
 
     &:hover {
