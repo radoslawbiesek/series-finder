@@ -1,6 +1,13 @@
-import { resultsList } from './ElementsList';
+// Elements list
+export const resultsList = document.getElementById("results");
+export const submitButton = document.getElementById("submit-button");
+export const inputField = document.getElementById("input-field");
 
-const renderItem = ({
+export const resetResults = () => {
+  resultsList.innerHTML = '';
+}
+
+export const renderItem = ({
   Title: title,
   Poster: image = 'https://via.placeholder.com/250x350',
   Year: year = "N.D.",
@@ -16,12 +23,10 @@ const renderItem = ({
         </div>
         <div class="item__text-area">
           <p class="item__title">${title}</p>
-          <span class="item__year">${year}</span>
-          <p class="item__desc">${desc}</p>
+          <span class="item__year">${year.substring(0,4)}</span>
+          <p class="item__desc">${desc}...</p>
           <p class="item__award">${awards}</p>
         </div>
       </div>`;
   resultsList.appendChild(el);
 };
-
-export default renderItem;

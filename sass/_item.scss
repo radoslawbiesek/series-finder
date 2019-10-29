@@ -1,7 +1,7 @@
 .items {
     list-style-type: none;
     display: flex;
-    justify-content: space-evenly;
+    justify-content: flex-start;
     flex-wrap: wrap;
     padding: 0;
     margin: 0;
@@ -10,17 +10,18 @@
 .item {
     width: 100%;
     max-width: 250px;
+    height: 600px;
     border-radius: 5px;
     overflow: hidden;
     margin: 25px;
     background-color: $item-bg;
-
     &__image {
         position: relative;
-        height: 375px;
         overflow: hidden;
+        height: 350px;
         & img {
             width: 100%;
+            height: auto;
         }
         &:hover {
             cursor: pointer;

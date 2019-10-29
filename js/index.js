@@ -1,25 +1,48 @@
-import renderItem from './renderItem';
-import { inputField, submitButton } from './ElementsList'
+import { fetchPage, fetchItemById } from "./fetchFunctions";
+import { inputField, submitButton, resetResults, renderItem } from "./DOMActions";
 
-const baseURL = "http://www.omdbapi.com/?apikey=4cdcc311";
+let state;
 
-const fetchPage = (keyword, page = 1) => {
-  return fetch(`${baseURL}&type=series&page=${page}&s=${keyword}`)
-    .then(res => res.json())
-    .then(data => data.Search)
-    .catch(error => console.log(error));
+const resetState = () => {
+  state = {
+    searching: "",
+    currPageApp: 0,
+    currPageAPI: 0,
+    dataFetched: [],
+  };
 };
 
-const fetchItemById = (id) => {
-  return fetch(`${baseURL}&i=${id}`)
-    .then(res => res.json())
-    .then(data => data)
-    .catch(error => console.log(error));
-};
+resetState();
 
-submitButton.addEventListener('click', () => {
-    event.preventDefault();
-    const id = inputField.value;
-    fetchItemById(id).then(data => renderItem(data))
+submitButton.addEventListener("click", () => {
+  event.preventDefault();
+  resetResults();
+  resetState();
+  state.searching = inputField.value;
+  state.currPageApp++;
+  renderPage(state.searching);
 });
 
+// Load next results on each scrolling to the end of the page
+window.addEventListener("scroll", () => {
+  const maxScrollingDistance =
+    document.documentElement.scrollHeight - window.innerHeight;
+  const scrolledDistance = window.scrollY;
+  if (Math.ceil(scrolledDistance) === maxScrollingDistance) {
+    state.currPageApp++;
+    renderPage(state.searching, state.currPageApp);
+  }
+});
+
+const renderPage = (keyword, page = 1) => {
+  fetchPage(keyword, page).then(data => {
+    data.forEach(item => {
+      if (item.Type === "series") {
+        fetchItemById(item.imdbID).then(item => {
+          state.dataFetched = [...state.dataFetched, item];
+          renderItem(item);
+        });
+      }
+    });
+  });
+};
