@@ -30,3 +30,7 @@ export const renderItem = ({
       </div>`;
   resultsList.appendChild(el);
 };
+
+export const renderItems = (dataArr, start, stop) => {
+  dataArr.slice(start, stop).forEach(item => renderItem(item));
+};

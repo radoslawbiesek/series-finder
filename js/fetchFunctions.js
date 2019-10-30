@@ -1,15 +1,21 @@
 export const baseURL = "http://www.omdbapi.com/?apikey=4cdcc311";
 
-export const fetchPage = (keyword, page = 1) => {
-  return fetch(`${baseURL}&type=series&page=${page}&s=${keyword}`)
-    .then(res => res.json())
-    .then(data => data.Search)
-    .catch(error => console.log(error));
+export const fetchPage = async (keyword, page = 1) => {
+  try {
+    const res = await fetch(`${baseURL}&type=series&page=${page}&s=${keyword}`);
+    const data = await res.json();
+    return data.Search;
+  } catch (error) {
+    console.log(error);
+  }
 };
 
-export const fetchItemById = id => {
-  return fetch(`${baseURL}&i=${id}`)
-    .then(res => res.json())
-    .then(data => data)
-    .catch(error => console.log(error));
+export const fetchItemById = async id => {
+  try {
+    const res = await fetch(`${baseURL}&i=${id}`);
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
 };
