@@ -1,6 +1,15 @@
 import { fetchPage, fetchItemById } from "./fetchFunctions";
-import { inputField, submitButton, resultsList, resetResults, renderItems, showLoader, hideLoader, displayMessage } from "./DOMActions";
-import { addActionOnScroll, removeActionOnScroll } from './onScroll';
+import {
+  inputField,
+  submitButton,
+  resultsList,
+  resetResults,
+  renderItems,
+  showLoader,
+  hideLoader,
+  displayMessage
+} from "./DOMActions";
+import { addActionOnScroll, removeActionOnScroll } from "./onScroll";
 
 const ITEMS_PER_PAGE_APP = 12;
 
@@ -11,7 +20,8 @@ const resetState = () => {
     currPageApp: 0,
     currPageAPI: 0,
     keyword: "",
-    items: []
+    items: [],
+    totalResults: false,
   };
 };
 
@@ -30,37 +40,66 @@ submitButton.addEventListener("click", () => {
 });
 
 const isNextFetchNeeded = (newData, currPageApp, items) => {
-  return ( currPageApp * ITEMS_PER_PAGE_APP > items.length + newData.length);
+  return currPageApp * ITEMS_PER_PAGE_APP > items.length + newData.length;
 };
 
-const renderPage = async () => {
+const isNextFetchPossible = (fetchedData, totalResults) => {
+  return parseInt(totalResults) > fetchedData.length;
+};
+
+export const renderPage = async () => {
   try {
     showLoader();
     removeActionOnScroll(renderPage);
-    let { currPageApp, currPageAPI, items, keyword } = state;
+    let { currPageApp, currPageAPI, items, keyword, totalResults } = state;
     currPageApp++;
-    let response = await fetchPage(keyword, ++currPageAPI);
-    console.log(response);
     
-    if (response.Response === "True") {
-      let { fetchedData, totalResults } = response;
-      if (isNextFetchNeeded(fetchedData, currPageApp, items)) {
-        const { Search: nextFetchedData } = await fetchPage(keyword, ++currPageAPI);
-        fetchedData = [...fetchedData, ...nextFetchedData];
-      }
-      const extendedData = await Promise.all(fetchedData.map(item => fetchItemById(item.imdbID)));
-      items = [...items, ...extendedData];
-      renderItems(items, (currPageApp - 1) * ITEMS_PER_PAGE_APP, currPageApp * ITEMS_PER_PAGE_APP);
-      addActionOnScroll(renderPage);
-      state = {...state, currPageAPI, currPageApp, items};
-      console.log('of ' + state.items.length);
+    if (totalResults && items.length === parseInt(totalResults)) {
+      // all data is already fetched, only rendering
+      renderItems(items, (currPageApp - 1) * ITEMS_PER_PAGE_APP, totalResults);
+      state = {...state, currPageApp};
     } else {
-      displayMessage('There are no results.');
+      // fetching data
+      let response = await fetchPage(keyword, ++currPageAPI);
+      switch (response.Response) {
+        case "True":
+          let { Search: fetchedData, totalResults } = response;
+          console.log(totalResults);
+          displayMessage(`There are ${totalResults} results for '${keyword}'`);
+          if (
+            isNextFetchNeeded(fetchedData, currPageApp, items) &&
+            isNextFetchPossible(fetchedData, totalResults)
+          ) {
+            const { Search: nextFetchedData } = await fetchPage(
+              keyword,
+              ++currPageAPI
+            );
+            fetchedData = [...fetchedData, ...nextFetchedData];
+          }
+          const extendedData = await Promise.all(
+            fetchedData.map(item => fetchItemById(item.imdbID))
+          );
+          items = [...items, ...extendedData];
+          renderItems(
+            items,
+            (currPageApp - 1) * ITEMS_PER_PAGE_APP,
+            currPageApp * ITEMS_PER_PAGE_APP
+          );
+          if (isNextFetchPossible(fetchedData, totalResults)) {
+            addActionOnScroll(renderPage);
+          }
+          state = { ...state, currPageAPI, currPageApp, items, totalResults };
+          break;
+        case "False":
+          displayMessage("There are no results.");
+      }
     }
-    hideLoader();
+
+    console.log(state);
   } catch (error) {
     console.log(error);
-    resultsList.innerHTML = "<p>Oops! Something went wrong. Please try again.";
-    hideLoader();
+    resetResults();
+    displayMessage("Oops! Something went wrong. Please try again");
   }
+  hideLoader();
 };

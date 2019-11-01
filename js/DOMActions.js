@@ -34,8 +34,7 @@ export const renderItem = ({
 };
 
 export const renderItems = (dataArr, start, stop) => {
-  dataArr.slice(start, stop).forEach(item => renderItem(item));
-  console.log('display ' + resultsList.childNodes.length);
+  dataArr.slice(start, Math.min(stop, dataArr.length)).forEach(item => renderItem(item));
 };
 
 export const showLoader = () => {
