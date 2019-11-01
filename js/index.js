@@ -1,5 +1,6 @@
 import { fetchPage, fetchItemById } from "./fetchFunctions";
-import { inputField, submitButton, resultsList, resetResults, renderItems } from "./DOMActions";
+import { inputField, submitButton, resultsList, resetResults, renderItems, showLoader, hideLoader, displayMessage } from "./DOMActions";
+import { addActionOnScroll, removeActionOnScroll } from './onScroll';
 
 const ITEMS_PER_PAGE_APP = 12;
 
@@ -7,10 +8,10 @@ let state;
 
 const resetState = () => {
   state = {
-    searching: "",
     currPageApp: 0,
     currPageAPI: 0,
-    dataFetched: [],
+    keyword: "",
+    items: []
   };
 };
 
@@ -21,44 +22,45 @@ submitButton.addEventListener("click", () => {
   if (inputField.value) {
     resetResults();
     resetState();
-    state.searching = inputField.value;
-    state.currPageApp++;
-    renderPage(state.searching, 1);
+    state.keyword = inputField.value;
+    renderPage();
   } else {
     return;
   }
 });
 
-// Load next results on each scrolling to the end of the page
-window.addEventListener("scroll", () => {
-  const maxScrollingDistance =
-    document.documentElement.scrollHeight - window.innerHeight;
-  const scrolledDistance = window.scrollY;
-  if (Math.ceil(scrolledDistance) === maxScrollingDistance) {
-    state.currPageApp++;
-    renderPage(state.searching, state.currPageApp);
-  }
-});
+const isNextFetchNeeded = (newData, currPageApp, items) => {
+  return ( currPageApp * ITEMS_PER_PAGE_APP > items.length + newData.length);
+};
 
-const isNextFetchNeeded = (newData) => {
-  return state.currPageApp * ITEMS_PER_PAGE_APP > state.dataFetched.length + newData.length;
-}
-
-const renderPage = async (keyword, page) => {
+const renderPage = async () => {
   try {
-    let fetchedData = await fetchPage(keyword, page);
-    state.currPageAPI++;
-    if (isNextFetchNeeded(fetchedData)) {
-      const nextFetchedData = await fetchPage(keyword, page + 1);
-      state.currPageAPI++;
-      fetchedData = [...fetchedData, ...nextFetchedData];
+    showLoader();
+    removeActionOnScroll(renderPage);
+    let { currPageApp, currPageAPI, items, keyword } = state;
+    currPageApp++;
+    let response = await fetchPage(keyword, ++currPageAPI);
+    console.log(response);
+    
+    if (response.Response === "True") {
+      let { fetchedData, totalResults } = response;
+      if (isNextFetchNeeded(fetchedData, currPageApp, items)) {
+        const { Search: nextFetchedData } = await fetchPage(keyword, ++currPageAPI);
+        fetchedData = [...fetchedData, ...nextFetchedData];
+      }
+      const extendedData = await Promise.all(fetchedData.map(item => fetchItemById(item.imdbID)));
+      items = [...items, ...extendedData];
+      renderItems(items, (currPageApp - 1) * ITEMS_PER_PAGE_APP, currPageApp * ITEMS_PER_PAGE_APP);
+      addActionOnScroll(renderPage);
+      state = {...state, currPageAPI, currPageApp, items};
+      console.log('of ' + state.items.length);
+    } else {
+      displayMessage('There are no results.');
     }
-    const extendedData = await Promise.all(fetchedData.map(item => fetchItemById(item.imdbID)));
-    state.dataFetched = [...state.dataFetched, ...extendedData];
-    renderItems(state.dataFetched, state.currPageApp - 1, state.currPageApp * ITEMS_PER_PAGE_APP);
-    console.log(state);
-  } catch(error) {
+    hideLoader();
+  } catch (error) {
     console.log(error);
-    resultsList.innerHTML = '<p>Oops! Something went wrong. Please try again.'
+    resultsList.innerHTML = "<p>Oops! Something went wrong. Please try again.";
+    hideLoader();
   }
-}
+};

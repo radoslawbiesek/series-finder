@@ -2,6 +2,8 @@
 export const resultsList = document.getElementById("results");
 export const submitButton = document.getElementById("submit-button");
 export const inputField = document.getElementById("input-field");
+export const loader = document.getElementById("loader");
+export const messageField = document.getElementById("message");
 
 export const resetResults = () => {
   resultsList.innerHTML = '';
@@ -33,4 +35,17 @@ export const renderItem = ({
 
 export const renderItems = (dataArr, start, stop) => {
   dataArr.slice(start, stop).forEach(item => renderItem(item));
+  console.log('display ' + resultsList.childNodes.length);
 };
+
+export const showLoader = () => {
+  loader.classList.remove('hidden');
+}
+
+export const hideLoader = () => {
+  loader.classList.add('hidden');
+}
+
+export const displayMessage = (message) => {
+  messageField.innerText = message;
+}

@@ -2,6 +2,7 @@
 @import 'header';
 @import 'form';
 @import 'item';
+@import 'loader';
 
 * {
     box-sizing: border-box;
@@ -20,7 +21,11 @@ body {
     min-height: 100vh;
     margin: 0 auto;
     box-shadow: 0 2px 2px 0 rgba(0,0,0,0.2);
-
     background-color: $container-bg;
     color: $bright-font;
 }
+
+.hidden {
+    display: none;
+}
+
