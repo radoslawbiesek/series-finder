@@ -3,10 +3,15 @@ export const resultsList = document.getElementById("results");
 export const submitButton = document.getElementById("submit-button");
 export const inputField = document.getElementById("input-field");
 export const loader = document.getElementById("loader");
-export const messageField = document.getElementById("message");
+export const messageTop = document.getElementById("message-top");
+export const messageBottom = document.getElementById("message-bottom");
 
-export const resetResults = () => {
+
+export const resetLayout = () => {
   resultsList.innerHTML = '';
+  messageTop.innerText = 'Type a series name and click search to start.';
+  messageBottom.innerText = '';
+  messageBottom.classList.add('hidden');
 }
 
 export const renderItem = ({
@@ -45,6 +50,14 @@ export const hideLoader = () => {
   loader.classList.add('hidden');
 }
 
-export const displayMessage = (message) => {
-  messageField.innerText = message;
+export const displayMessage = (message, field = "top") => {
+  switch (field) {
+    case "top":
+      messageTop.innerText = message;
+      break;
+    case "bottom":
+      messageBottom.innerText = message;
+      messageBottom.classList.remove('hidden');
+      break;
+  }
 }

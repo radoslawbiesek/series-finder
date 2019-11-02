@@ -2,8 +2,7 @@ import { fetchPage, fetchItemById } from "./fetchFunctions";
 import {
   inputField,
   submitButton,
-  resultsList,
-  resetResults,
+  resetLayout,
   renderItems,
   showLoader,
   hideLoader,
@@ -21,7 +20,7 @@ const resetState = () => {
     currPageAPI: 0,
     keyword: "",
     items: [],
-    totalResults: false,
+    totalResults: false
   };
 };
 
@@ -30,7 +29,7 @@ resetState();
 submitButton.addEventListener("click", () => {
   event.preventDefault();
   if (inputField.value) {
-    resetResults();
+    resetLayout();
     resetState();
     state.keyword = inputField.value;
     renderPage();
@@ -48,23 +47,23 @@ const isNextFetchPossible = (fetchedData, totalResults) => {
 };
 
 export const renderPage = async () => {
+  showLoader();
   try {
-    showLoader();
     removeActionOnScroll(renderPage);
     let { currPageApp, currPageAPI, items, keyword, totalResults } = state;
     currPageApp++;
-    
+
     if (totalResults && items.length === parseInt(totalResults)) {
       // all data is already fetched, only rendering
       renderItems(items, (currPageApp - 1) * ITEMS_PER_PAGE_APP, totalResults);
-      state = {...state, currPageApp};
+      state = { ...state, currPageApp };
     } else {
       // fetching data
       let response = await fetchPage(keyword, ++currPageAPI);
       switch (response.Response) {
         case "True":
-          let { Search: fetchedData, totalResults } = response;
-          console.log(totalResults);
+          if (!totalResults) { totalResults = response.totalResults }
+          let { Search: fetchedData } = response;
           displayMessage(`There are ${totalResults} results for '${keyword}'`);
           if (
             isNextFetchNeeded(fetchedData, currPageApp, items) &&
@@ -88,17 +87,21 @@ export const renderPage = async () => {
           if (isNextFetchPossible(fetchedData, totalResults)) {
             addActionOnScroll(renderPage);
           }
+          console.log(totalResults);
           state = { ...state, currPageAPI, currPageApp, items, totalResults };
+          console.log(state);
           break;
         case "False":
           displayMessage("There are no results.");
       }
     }
-
-    console.log(state);
+    displayMessage(
+      `Showing ${Math.min(currPageApp * ITEMS_PER_PAGE_APP, items.length)} of ${totalResults} total results`,
+      "bottom"
+    );
   } catch (error) {
     console.log(error);
-    resetResults();
+    resetLayout();
     displayMessage("Oops! Something went wrong. Please try again");
   }
   hideLoader();
