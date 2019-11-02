@@ -1,6 +1,4 @@
-export const yearInput = document.getElementById("year-input");
-export const ratingInput = document.getElementById("rating-input");
-export const resetFiltersButton = document.getElementById("reset-filters");
+import { yearInput, ratingInput, resetFiltersButton } from './DOMElements';
 
 export const filter = () => {
   const items = document.querySelectorAll(".list-item");

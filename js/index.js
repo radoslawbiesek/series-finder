@@ -1,16 +1,22 @@
 import { fetchPage, fetchItemById } from "./fetchFunctions";
 import {
-  inputField,
-  submitButton,
   resetLayout,
-  renderItems,
   showLoader,
   hideLoader,
-  displayMessage
+  displayMessage,
+  clearResultsList
 } from "./DOMActions";
+import {
+  inputField,
+  submitButton,
+  sortBySelect,
+  resultsList
+} from "./DOMElements";
+import { renderItems } from "./Item";
 import { addActionOnScroll, removeActionOnScroll } from "./onScroll";
-import './filters';
-import { filter } from './filters';
+import "./filters";
+import { filter } from "./filters";
+import { sortBy } from "./sort";
 
 const ITEMS_PER_PAGE_APP = 12;
 
@@ -22,7 +28,7 @@ const resetState = () => {
     currPageAPI: 0,
     keyword: "",
     items: [],
-    totalResults: false
+    totalResults: null
   };
 };
 
@@ -40,65 +46,116 @@ submitButton.addEventListener("click", () => {
   }
 });
 
+sortBySelect.addEventListener("change", () => {
+  clearResultsList();
+  clearResultsList();
+  renderItems(
+    sortBy(state.items, sortBySelect.value),
+    0,
+    state.currPageApp * ITEMS_PER_PAGE_APP
+  );
+  filter();
+});
+
 const isNextFetchNeeded = (newData, currPageApp, items) => {
   return currPageApp * ITEMS_PER_PAGE_APP > items.length + newData.length;
 };
 
 const isNextFetchPossible = (fetchedData, totalResults) => {
-  return parseInt(totalResults) > fetchedData.length;
+  return parseInt(totalResults) >= fetchedData.length;
 };
 
 export const renderPage = async () => {
   showLoader();
+
   try {
+    // Preventing multiple call and further request for non-existing page
     removeActionOnScroll(renderPage);
+
+    // Copying state
     let { currPageApp, currPageAPI, items, keyword, totalResults } = state;
+
     currPageApp++;
 
-    if (totalResults && items.length === parseInt(totalResults)) {
-      // all data is already fetched, only rendering
-      renderItems(items, (currPageApp - 1) * ITEMS_PER_PAGE_APP, totalResults);
-      filter();
-      state = { ...state, currPageApp };
-    } else {
-      // fetching data
-      let response = await fetchPage(keyword, ++currPageAPI);
-      switch (response.Response) {
-        case "True":
-          if (!totalResults) { totalResults = response.totalResults }
-          let { Search: fetchedData } = response;
-          displayMessage(`There are ${totalResults} results for '${keyword}'`);
-          if (
-            isNextFetchNeeded(fetchedData, currPageApp, items) &&
-            isNextFetchPossible(fetchedData, totalResults)
-          ) {
-            const { Search: nextFetchedData } = await fetchPage(
-              keyword,
-              ++currPageAPI
+    switch (items.length) {
+      // All avalaible data is already fetched
+      case parseInt(totalResults):
+        state = { ...state, currPageApp };
+        break;
+
+      // Fetching new data
+      default:
+        let response = await fetchPage(keyword, ++currPageAPI);
+        switch (response.Response) {
+          case "True":
+            // Setting total results if the first fetch
+            if (!totalResults) {
+              totalResults = response.totalResults;
+              displayMessage(
+                `There are ${totalResults} results for '${keyword}'`
+              );
+            }
+
+            let { Search: fetchedData } = response;
+
+            // Fetch more data if needed
+            if (
+              isNextFetchNeeded(fetchedData, currPageApp, items) &&
+              isNextFetchPossible(fetchedData, totalResults)
+            ) {
+              const { Search: nextFetchedData } = await fetchPage(
+                keyword,
+                ++currPageAPI
+              );
+              fetchedData = [...fetchedData, ...nextFetchedData];
+            }
+
+            // Fetch additional info for every item
+            const extendedData = await Promise.all(
+              fetchedData.map(item => fetchItemById(item.imdbID))
             );
-            fetchedData = [...fetchedData, ...nextFetchedData];
-          }
-          const extendedData = await Promise.all(
-            fetchedData.map(item => fetchItemById(item.imdbID))
-          );
-          items = [...items, ...extendedData];
-          renderItems(
-            items,
-            (currPageApp - 1) * ITEMS_PER_PAGE_APP,
-            currPageApp * ITEMS_PER_PAGE_APP
-          );
-          filter();
-          if (isNextFetchPossible(fetchedData, totalResults)) {
-            addActionOnScroll(renderPage);
-          }
-          state = { ...state, currPageAPI, currPageApp, items, totalResults };
-          break;
-        case "False":
-          displayMessage("There are no results.");
-      }
+
+            items = [...items, ...extendedData];
+
+            if (isNextFetchPossible(fetchedData, totalResults)) {
+              addActionOnScroll(renderPage);
+            }
+            state = { ...state, currPageAPI, currPageApp, items, totalResults };
+            break;
+          case "False":
+            displayMessage("There are no results.");
+            hideLoader();
+            return;
+        }
     }
+
+    switch (sortBySelect.value) {
+      // Adding only new items if sorting is inactive
+      case "Default":
+        renderItems(
+          items,
+          (currPageApp - 1) * ITEMS_PER_PAGE_APP,
+          Math.min(currPageApp * ITEMS_PER_PAGE_APP, totalResults)
+        );
+        break;
+      // Re-rendering results list if sorting is active
+      default:
+        clearResultsList();
+        renderItems(
+          sortBy(items, sortBySelect.value),
+          0,
+          Math.min(currPageApp * ITEMS_PER_PAGE_APP, totalResults)
+        );
+        break;
+    }
+
+    filter();
+
     displayMessage(
-      `Showing ${Math.min(currPageApp * ITEMS_PER_PAGE_APP, items.length)} of ${totalResults} total results`,
+      `Showing ${Math.min(
+        currPageApp * ITEMS_PER_PAGE_APP,
+        items.length
+      )} of ${totalResults} total results`,
       "bottom"
     );
   } catch (error) {
@@ -106,5 +163,6 @@ export const renderPage = async () => {
     resetLayout();
     displayMessage("Oops! Something went wrong. Please try again");
   }
+
   hideLoader();
 };

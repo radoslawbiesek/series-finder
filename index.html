@@ -29,6 +29,18 @@
             <input id="year-input" type="number" class="form__input" />
             <button id="reset-filters">Reset filters</button>
           </form>
+          <form class="form">
+            <label for="sort-by">Sort-by: </label>
+            <select id="sort-by">
+                <option value="Default">Default</option>
+                <option value="A-Z">A-Z</option>
+                <option value="Z-A">Z-A</option>
+                <option value="Highest rating">Highest rating</option>
+                <option value="Lowest rating">Lowest rating</option>
+                <option value="Earliest release">Earliest release</option>
+                <option value="Latest release">Latest release</option>
+            </select>
+          </form>
         </div>
         <p id="message-top">Type a series name and click search to start.</p>
         <ul class="items" id="results">
