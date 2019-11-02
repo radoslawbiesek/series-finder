@@ -2,7 +2,13 @@
     margin: 0 auto;
     display: flex;
     justify-content: center;
+    align-content: center;
     flex-wrap: wrap;
+}
+
+.form--filters {
+    flex-direction: column;
+    margin-top: 50px;
 }
 
 .form__input {

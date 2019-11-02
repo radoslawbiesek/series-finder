@@ -9,6 +9,8 @@ import {
   displayMessage
 } from "./DOMActions";
 import { addActionOnScroll, removeActionOnScroll } from "./onScroll";
+import './filters';
+import { filter } from './filters';
 
 const ITEMS_PER_PAGE_APP = 12;
 
@@ -56,6 +58,7 @@ export const renderPage = async () => {
     if (totalResults && items.length === parseInt(totalResults)) {
       // all data is already fetched, only rendering
       renderItems(items, (currPageApp - 1) * ITEMS_PER_PAGE_APP, totalResults);
+      filter();
       state = { ...state, currPageApp };
     } else {
       // fetching data
@@ -84,12 +87,11 @@ export const renderPage = async () => {
             (currPageApp - 1) * ITEMS_PER_PAGE_APP,
             currPageApp * ITEMS_PER_PAGE_APP
           );
+          filter();
           if (isNextFetchPossible(fetchedData, totalResults)) {
             addActionOnScroll(renderPage);
           }
-          console.log(totalResults);
           state = { ...state, currPageAPI, currPageApp, items, totalResults };
-          console.log(state);
           break;
         case "False":
           displayMessage("There are no results.");

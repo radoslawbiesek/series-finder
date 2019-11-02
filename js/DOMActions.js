@@ -22,8 +22,11 @@ export const renderItem = ({
   Plot: desc = "Description is not available.",
   Awards: awards
 }) => {
-  const el = document.createElement("li");
-  el.innerHTML = `<div class="item">
+  const item = document.createElement("li");
+  item.setAttribute('data-year', year.substring(0,4));
+  item.setAttribute('data-rating', rating);
+  item.classList.add("list-item");
+  item.innerHTML = `<div class="item">
         <div class="item__image">
           <img src="${image}" alt="${title}"/>
           <span class="item__rating">${rating}</span>
@@ -35,7 +38,7 @@ export const renderItem = ({
           <p class="item__award">${awards}</p>
         </div>
       </div>`;
-  resultsList.appendChild(el);
+  resultsList.appendChild(item);
 };
 
 export const renderItems = (dataArr, start, stop) => {

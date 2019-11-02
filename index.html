@@ -17,26 +17,31 @@
         <h1 class="header__title">Series searching</h1>
       </header>
       <main>
-      <form class="form">
-          <input
-            id="input-field"
-            type="text"
-            class="form__input"
-            id="searching-title"
-            autofocus
-          />
+        <form class="form">
+          <input id="input-field" type="text" class="form__input" autofocus />
           <button class="form__button" id="submit-button">Search</button>
         </form>
+        <div id="filters">
+          <form class="form form--filters">
+            <label for="rating-input">Rating from: </label>
+            <input id="rating-input" type="number" class="form__input" />
+            <label for="year-input">Release year: </label>
+            <input id="year-input" type="number" class="form__input" />
+            <button id="reset-filters">Reset filters</button>
+          </form>
+        </div>
         <p id="message-top">Type a series name and click search to start.</p>
         <ul class="items" id="results">
           <!-- ITEMS WILL BE RENDERED HERE -->
         </ul>
         <p id="message-bottom" class="hidden"></p>
         <div id="loader" class="loading-overlay hidden">
-          <img src="https://thumbs.gfycat.com/HollowNaughtyAfricanhornbill-small.gif"/>
+          <img
+            src="https://thumbs.gfycat.com/HollowNaughtyAfricanhornbill-small.gif"
+          />
         </div>
       </main>
     </div>
-    <script src='js/index.js'></script>
+    <script src="js/index.js"></script>
   </body>
 </html>
