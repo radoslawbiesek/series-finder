@@ -4,55 +4,105 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Searching series</title>
+    <title>SeriesFinder - TV shows searching app</title>
+    <link rel="icon" type="image/x-icon" href="images/favicon.ico" />
     <link
       href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="sass/style.scss" />
+    <script
+      src="https://kit.fontawesome.com/395dbce901.js"
+      crossorigin="anonymous"
+    ></script>
   </head>
   <body>
     <div class="container">
       <header class="header">
-        <h1 class="header__title">Series searching</h1>
-      </header>
-      <main>
+        <h1 class="header__title">
+          <a class="header__link" href="index.html"
+            ><i class="fas fa-tv"></i>
+            <span class="header__subtitle">Series</span>Finder</a
+          >
+        </h1>
         <form class="form">
-          <input id="input-field" type="text" class="form__input" autofocus />
-          <button class="form__button" id="submit-button">Search</button>
+          <input
+            id="input-field"
+            type="text"
+            class="form__input"
+            placeholder="enter the series title"
+            autofocus
+          />
+          <button class="form__button" id="submit-button">
+            <i class="fas fa-search"></i>
+          </button>
         </form>
-        <div id="filters">
-          <form class="form form--filters">
-            <label for="rating-input">Rating from: </label>
-            <input id="rating-input" type="number" class="form__input" />
-            <label for="year-input">Release year: </label>
-            <input id="year-input" type="number" class="form__input" />
-            <button id="reset-filters">Reset filters</button>
-          </form>
-          <form class="form">
-            <label for="sort-by">Sort-by: </label>
-            <select id="sort-by">
-                <option value="Default">Default</option>
-                <option value="A-Z">A-Z</option>
-                <option value="Z-A">Z-A</option>
-                <option value="Highest rating">Highest rating</option>
-                <option value="Lowest rating">Lowest rating</option>
-                <option value="Earliest release">Earliest release</option>
-                <option value="Latest release">Latest release</option>
-            </select>
-          </form>
-        </div>
-        <p id="message-top">Type a series name and click search to start.</p>
+      </header>
+      <main class="main">
+        <form id="form-filters" class="form-filters hidden">
+          <label class="form-filters__label" for="rating-input"
+            >Rating from:
+          </label>
+          <input
+            class="form-filters__input"
+            id="rating-input"
+            type="number"
+            class="form__input"
+          />
+          <label class="form-filters__label" for="year-input"
+            >Release year:
+          </label>
+          <input
+            class="form-filters__input"
+            id="year-input"
+            type="number"
+            class="form__input"
+          />
+          <button class="form-filters__button" id="reset-filters">
+            Reset filters
+          </button>
+        </form>
+        <nav class="results-nav">
+          <select id="sort-by" class="results-nav__select">
+            <option value="Default">Sort by default</option>
+            <option value="A-Z">Sort by title (A-Z)</option>
+            <option value="Z-A">Sort by title (Z-A)</option>
+            <option value="Highest rating">Sort by rating (high to low)</option>
+            <option value="Lowest rating">Sort by rating (low to high)</option>
+            <option value="Earliest release"
+              >Sort by release (from the earliest)</option
+            >
+            <option value="Latest release"
+              >Sort by release (from the latest)</option
+            >
+          </select>
+          <p id="results-info"></p>
+          <button
+            class="form-filters__button form-filters__button--show"
+            id="show-filters"
+          >
+            <i class="fas fa-filter"></i> Filters
+          </button>
+        </nav>
+
         <ul class="items" id="results">
           <!-- ITEMS WILL BE RENDERED HERE -->
+          <h2 class="items__placeholder">
+            Enter the series title to get started.
+          </h2>
         </ul>
-        <p id="message-bottom" class="hidden"></p>
-        <div id="loader" class="loading-overlay hidden">
-          <img
-            src="https://thumbs.gfycat.com/HollowNaughtyAfricanhornbill-small.gif"
-          />
+        <div id="loader" class="loader hidden">
+          <img src="images/loader.gif" />
         </div>
+        <p id="message-bottom" class="items__summary hidden"></p>
       </main>
+      <footer class="footer">
+        <p class="footer__text">
+          All data provided by
+          <a class="footer__link" href="http://www.omdbapi.com/">omdbapi.com</a
+          >.
+        </p>
+      </footer>
     </div>
     <script src="js/index.js"></script>
   </body>

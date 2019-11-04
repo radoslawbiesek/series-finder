@@ -1,0 +1,47 @@
+.form-filters {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  border: 1px solid $item-bg;
+  &__input {
+    background-color: inherit;
+    outline: none;
+    border-width: 2px;
+    border-radius: 5px;
+    border-style: solid;
+    border-color: $body-bg;
+    color: white;
+    padding: 5px;
+    width: 100px;
+    height: 30px;
+    margin: 5px;
+    &:focus {
+      border: 2px solid $yellow;
+    }
+  }
+  &__label {
+    margin-left: 20px;
+    display: inline;
+  }
+  &__button {
+    background-color: inherit;
+    color: $bright-font;
+    outline: none;
+    border-width: 2px;
+    border-radius: 5px;
+    border-style: solid;
+    border-color: $body-bg;
+    font-size: 1em;
+    height: 30px;
+    width: 120px;
+    margin: 20px;
+    &:hover {
+      cursor: pointer;
+      border: 2px solid $yellow;
+    }
+    &--show {
+      margin-left: 80px;
+    }
+  }
+}

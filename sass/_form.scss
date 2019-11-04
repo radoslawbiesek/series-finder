@@ -1,48 +1,29 @@
 .form {
-    margin: 0 auto;
-    display: flex;
-    justify-content: center;
-    align-content: center;
-    flex-wrap: wrap;
-}
-
-.form--filters {
-    flex-direction: column;
-    margin: 50px;
-}
-
-.form__input {
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  &__input {
     background-color: inherit;
     outline: none;
-    border: 2px solid $item-bg;
-    border-radius: 2px 0 0 2px;
-    border-right: none;
-    color: $bright-font;
+    border-width: 2px 0 2px 2px;
+    border-radius: 10px 0 0 10px;
+    border-style: solid;
+    border-color: $yellow;
+    color: white;
     padding: 10px;
     width: 300px;
-}
-
-.form__button {
+  }
+  &__button {
     background-color: inherit;
     color: $bright-font;
     outline: none;
-    border: 2px solid $item-bg;
-    border-radius: 0 2px 2px 0;
-    font-size: 1.5em;
-}
-
-.form__button:hover {
-    cursor: pointer;
-    border: 2px solid $yellow;
-}
-
-.form__input:focus {
+    border-width: 2px 2px 2px 0;
+    border-radius: 0 10px 10px 0;
+    border-style: solid;
     border-color: $yellow;
-}
-
-.form__label {
-    margin-top: 30px;
-    width: 100%;
-    text-align: center;
     font-size: 1.5em;
+  }
+  &__button:hover {
+    cursor: pointer;
+  }
 }

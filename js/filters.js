@@ -1,7 +1,7 @@
-import { yearInput, ratingInput, resetFiltersButton } from './DOMElements';
+import { yearInput, ratingInput, resetFiltersButton } from "./DOMElements";
 
 export const filter = () => {
-  const items = document.querySelectorAll(".list-item");
+  const items = document.querySelectorAll(".list-element");
   const yearValue = yearInput.value;
   const ratingValue = ratingInput.value ? ratingInput.value : 0;
   items.forEach(item => {

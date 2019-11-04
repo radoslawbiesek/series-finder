@@ -1,7 +1,23 @@
 .header {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    height: 100px;
-    padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  min-height: 120px;
+  padding: 20px;
+  background-color: $item-bg;
+  @media (max-width: 576px) {
+    justify-content: center;
+  }
+  &__title {
+    font-size: 2em;
+    font-weight: 400;
+  }
+  &__subtitle {
+    font-weight: 700;
+  }
+  &__link {
+    text-decoration: none;
+    color: inherit;
+  }
 }

@@ -10,6 +10,8 @@ import {
   inputField,
   submitButton,
   sortBySelect,
+  resultsInfo,
+  messageBottom,
   resultsList
 } from "./DOMElements";
 import { renderItems } from "./Item";
@@ -57,8 +59,11 @@ sortBySelect.addEventListener("change", () => {
   filter();
 });
 
-const isNextFetchNeeded = (newData, currPageApp, items) => {
-  return currPageApp * ITEMS_PER_PAGE_APP > items.length + newData.length;
+const isNextFetchNeeded = (totalResults, newData, currPageApp, items) => {
+  return (
+    Math.min(currPageApp * ITEMS_PER_PAGE_APP, totalResults) >
+    items.length + newData.length
+  );
 };
 
 const isNextFetchPossible = (fetchedData, totalResults) => {
@@ -92,7 +97,8 @@ export const renderPage = async () => {
             if (!totalResults) {
               totalResults = response.totalResults;
               displayMessage(
-                `There are ${totalResults} results for '${keyword}'`
+                `Found ${totalResults} results for '${keyword}'`,
+                resultsInfo
               );
             }
 
@@ -100,7 +106,12 @@ export const renderPage = async () => {
 
             // Fetch more data if needed
             if (
-              isNextFetchNeeded(fetchedData, currPageApp, items) &&
+              isNextFetchNeeded(
+                totalResults,
+                fetchedData,
+                currPageApp,
+                items
+              ) &&
               isNextFetchPossible(fetchedData, totalResults)
             ) {
               const { Search: nextFetchedData } = await fetchPage(
@@ -123,7 +134,10 @@ export const renderPage = async () => {
             state = { ...state, currPageAPI, currPageApp, items, totalResults };
             break;
           case "False":
-            displayMessage("There are no results.");
+            displayMessage(
+              `Your search "${state.keyword}" did not match any series. Please try again.`,
+              resultsList
+            );
             hideLoader();
             return;
         }
@@ -156,12 +170,15 @@ export const renderPage = async () => {
         currPageApp * ITEMS_PER_PAGE_APP,
         items.length
       )} of ${totalResults} total results`,
-      "bottom"
+      messageBottom
     );
   } catch (error) {
     console.log(error);
     resetLayout();
-    displayMessage("Oops! Something went wrong. Please try again");
+    displayMessage(
+      "Oops! Something went wrong. Please try again",
+      messageBottom
+    );
   }
 
   hideLoader();
